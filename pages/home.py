@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-from router import sidebar_menu
+from router import sidebar_menu, PAGES
 
 # Pandas options
 pd.options.display.max_rows = 25
@@ -27,6 +27,7 @@ df_monthly['Smallcap_rel_change'] = df_monthly['Smallcap_TRI']/df_monthly['Small
 df_monthly['Largecap_rel_change'] = combined_df['Total Returns Index']/df_monthly['Total Returns Index'].iloc[0]
 df_monthly['Rel_value'] = df_monthly['Smallcap_rel_change']/df_monthly['Largecap_rel_change']
 
+std = df_monthly['Rel_value'].std()
 
 # Code for the GUI of the app goes here
 def run_UI():
@@ -63,16 +64,36 @@ def run_UI():
 
     st.markdown('''
     The ratio of the returns from the NIFTY SMALLCAP 250 TRI and NIFTY 50 TRI from April 2005 is represented in the chart below.
-
     ''')
     
     fig = px.line(df_monthly, x='Date', y='Rel_value', color_discrete_sequence=["purple"])
-    fig.update_layout(xaxis_title='', yaxis_title='Ratio of the Indexes')
+    fig.update_layout(xaxis_title='', yaxis_title=' Ratio of the indices')
     fig.update_traces(mode="lines", hovertemplate = "Date: %{x} <br>Ratio: %{y:.2f}", xhoverformat="%b %d, %Y")
     fig.update_layout(hovermode="x unified")
     fig.update_xaxes(dtick='M24', tickformat='%Y', ticklabelmode='period')
-
     st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown('''
+    The chart below highlights the regions within ±1σ, ±2σ, and ±3σ of the ratio of relative change of the indices. Based on which, we shall
+    try to formulate certain investment strategies.
+    ''')
+    
+    fig2 = px.line(df_monthly, x='Date', y='Rel_value', color_discrete_sequence=["purple"])
+    fig2.update_layout(xaxis_title='', yaxis_title=' Variation of the indices')
+    fig2.update_layout(yaxis=dict(
+        tickmode='array', 
+        ticktext=['- 3σ','- 2σ','- 1σ', '1', '+ 1σ','+ 2σ','+ 3σ'], 
+        tickvals=[1-3*std, 1-2*std, 1-std, 1, 1+std, 1+2*std, 1+3*std])
+    )
+    fig2.update_traces(mode="lines", hovertemplate = "Date: %{x} <br>Ratio: %{y:.2f}", xhoverformat="%b %d, %Y")
+    fig2.update_layout(hovermode="x unified")
+    fig2.add_shape(type="rect", x0=df_monthly['Date'].min(), x1=df_monthly['Date'].max(), y0=1-std, y1=1+std,fillcolor="blue", opacity=0.15, line_width=1)
+    fig2.add_shape(type="rect", x0=df_monthly['Date'].min(), x1=df_monthly['Date'].max(), y0=1-2*std, y1=1+2*std,fillcolor="blue", opacity=0.1, line_width=1)
+    fig2.add_shape(type="rect", x0=df_monthly['Date'].min(), x1=df_monthly['Date'].max(), y0=1-3*std, y1=1+3*std,fillcolor="blue", opacity=0.05, line_width=1)
+    fig2.update_xaxes(dtick='M24', tickformat='%Y', ticklabelmode='period')
+    st.plotly_chart(fig2, use_container_width=True)
+
+    st.columns(3)[1].page_link("pages/strategy1.py", label='Navigate to Strategy 1', icon="♟️")
 
 sidebar_menu()
 run_UI()

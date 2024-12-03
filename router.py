@@ -1,7 +1,7 @@
 import streamlit as st
 
 PAGES = [
-    'Home',
+    'Introduction',
     'Strategy 1: Pause/Withdraw SIP',
     'Strategy 2: Pause/Withdraw SIP + Reinvest',
     'Custom Strategy'
