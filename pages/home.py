@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-from router import sidebar_menu, PAGES
+from router import sidebar_menu
 
 # Pandas options
 pd.options.display.max_rows = 25

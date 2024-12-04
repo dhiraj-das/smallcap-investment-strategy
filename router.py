@@ -2,9 +2,9 @@ import streamlit as st
 
 PAGES = [
     'Introduction',
-    'Strategy 1: Pause/Withdraw SIP',
-    'Strategy 2: Pause/Withdraw SIP + Reinvest',
-    'Custom Strategy'
+    'Strategy 1: Invest + Pause SIP',
+    'Strategy 2: Invest + Withdraw SIP',
+    'Strategy Builder'
 ]
 
 def authenticated_sidebar():
@@ -26,6 +26,21 @@ def unauthenticated_menu():
     st.sidebar.divider()
     st.sidebar.page_link("pages/home.py", label=PAGES[0], icon="🏠")
     st.sidebar.page_link("pages/strategy1.py", label=PAGES[1], icon="♟️")
+    
+    footer="""
+        <style>
+            .footer {
+                position: fixed;
+                bottom: 0;
+                margin: auto;
+                width: inherit;   
+            }
+        </style>
+        <div class="footer">
+            <p>Developed with ❤ by <a href="https://www.linkedin.com/in/dhiraj-das">Dhiraj Das</a></p>
+        </div>
+    """
+    st.sidebar.markdown(footer,unsafe_allow_html=True)
 
 def sidebar_menu():
     # Determine if a user is logged in or not, then show the correct navigation menu
@@ -56,6 +71,11 @@ def set_page_metadata():
             This app has been developed by Dhiraj Das based on relative valuation model to help invest in the NIFTY smallcap index.
             If you found the tool useful, do drop a hi to me on my Email / LinkedIn
             - [Dhiraj Das](https://www.linkedin.com/in/dhiraj-das/) (email: dhiraj.das.05@gmail.com)
+
+            Disclaimer: I am not a SEBI registered investment advisor or a registered research analyst. 
+            The content and ideas presented in this app is purely for educational purposes and it should not be constituted 
+            as an investment or trading advice. Users should do their own research and due diligence before investing 
+            or acting on the information presented.
             """
         }
     )
