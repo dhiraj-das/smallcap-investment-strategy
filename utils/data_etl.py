@@ -1,5 +1,6 @@
 from datetime import datetime
 import pandas as pd
+import numpy as np
 from utils.api_manager import NIFTYIndices
 
 class ETLManager:
@@ -22,3 +23,61 @@ class ETLManager:
         df_monthly['smallcap_rel_change'] = df_monthly['nifty_smallcap250_tri']/df_monthly['nifty_smallcap250_tri'].iloc[0]
         df_monthly['relative_value'] = df_monthly['smallcap_rel_change']/df_monthly['largecap_rel_change']
         return df_monthly
+    
+    def returns_from_nifty50(self, timeperiod = None):
+        df = self.prepare_master_data()
+        if timeperiod == None:
+            subset_df = df.copy(deep=True)
+        else:
+            subset_df = df.tail(timeperiod*12)
+        subset_df['condition'] = 'buy'
+        subset_df['cashflow'] = np.where(subset_df['condition']=='buy', 10000, 0)
+        subset_df['previous_nifty50_tri'] = subset_df['nifty50_tri'].shift(1)
+        subset_df['tri_ratio'] = (subset_df['nifty50_tri'] / subset_df['previous_nifty50_tri'])
+        subset_df['present_value'] = 10000
+        subset_df = subset_df.reset_index(drop=True)
+        for i in range(1, len(subset_df)):
+            subset_df.loc[i, 'present_value'] = (subset_df.loc[i-1, 'present_value'] * subset_df.loc[i, 'tri_ratio']) + subset_df.loc[i, 'cashflow']
+        final_df = pd.concat([subset_df, pd.DataFrame({'date': subset_df['date'].max(), 'cashflow': -(subset_df['present_value'].max())}, index=[len(subset_df)])])
+        final_df = final_df[['date', 'cashflow']]
+        return final_df
+    
+    def returns_from_nifty_smallcap250(self, timeperiod = None):
+        df = self.prepare_master_data()
+        if timeperiod == None:
+            subset_df = df.copy(deep=True)
+        else:
+            subset_df = df.tail(timeperiod*12)
+        subset_df['condition'] = 'buy'
+        subset_df['cashflow'] = np.where(subset_df['condition']=='buy', 10000, 0)
+        subset_df['previous_smallcap250_tri'] = subset_df['nifty_smallcap250_tri'].shift(1)
+        subset_df['tri_ratio'] = (subset_df['nifty_smallcap250_tri'] / subset_df['previous_smallcap250_tri'])
+        subset_df['present_value'] = 10000
+        subset_df = subset_df.reset_index(drop=True)
+        for i in range(1, len(subset_df)):
+            subset_df.loc[i, 'present_value'] = (subset_df.loc[i-1, 'present_value'] * subset_df.loc[i, 'tri_ratio']) + subset_df.loc[i, 'cashflow']
+        final_df = pd.concat([subset_df, pd.DataFrame({'date': subset_df['date'].max(), 'cashflow': -(subset_df['present_value'].max())}, index=[len(subset_df)])])
+        final_df = final_df[['date', 'cashflow']]
+        return final_df
+    
+    def returns_from_strategy1(self, timeperiod = None):
+        df = self.prepare_master_data()
+        std_dev = df['relative_value'].std()
+        if timeperiod == None:
+            subset_df = df.copy(deep=True)
+        else:
+            subset_df = df.tail(timeperiod*12)
+        subset_df['condition'] = np.where(subset_df['relative_value']>(1+std_dev), 'buy', 'pause')
+        subset_df['cashflow'] = np.where(subset_df['condition']=='buy', 10000, 0)
+        subset_df['previous_smallcap250_tri'] = subset_df['nifty_smallcap250_tri'].shift(1)
+        subset_df['tri_ratio'] = (subset_df['nifty_smallcap250_tri'] / subset_df['previous_smallcap250_tri'])
+        subset_df['present_value'] = 10000
+        subset_df = subset_df.reset_index(drop=True)
+        for i in range(1, len(subset_df)):
+            subset_df.loc[i, 'present_value'] = (subset_df.loc[i-1, 'present_value'] * subset_df.loc[i, 'tri_ratio']) + subset_df.loc[i, 'cashflow']
+        final_df = pd.concat([subset_df, pd.DataFrame({'date': subset_df['date'].max(), 'cashflow': -(subset_df['present_value'].max())}, index=[len(subset_df)])])
+        final_df = final_df[['date', 'cashflow']]
+        return final_df
+
+    def prepare_data_for_returns(self, dataframe, columnName, timeperiod):
+        return None

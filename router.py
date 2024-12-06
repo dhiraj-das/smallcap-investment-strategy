@@ -26,6 +26,7 @@ def unauthenticated_menu():
     st.sidebar.divider()
     st.sidebar.page_link("pages/home.py", label=PAGES[0], icon="🏠")
     st.sidebar.page_link("pages/strategy1.py", label=PAGES[1], icon="♟️")
+    # st.sidebar.page_link("pages/strategy2.py", label=PAGES[2], icon="♟️")
     
     footer="""
         <style>

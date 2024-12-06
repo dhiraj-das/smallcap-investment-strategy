@@ -71,6 +71,7 @@ def run_UI():
     fig2.update_xaxes(dtick='M24', tickformat='%Y', ticklabelmode='period')
     st.plotly_chart(fig2, use_container_width=True)
 
+    # Navigation to Next Page Logic
     st.columns(3)[1].page_link("pages/strategy1.py", label='Navigate to Strategy 1', icon="♟️")
 
 sidebar_menu()

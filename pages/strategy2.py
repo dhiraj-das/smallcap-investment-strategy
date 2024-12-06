@@ -8,7 +8,7 @@ from router import sidebar_menu
 
 def run_UI():
     st.markdown('''
-    #### :violet[Strategy 1: Invest + Pause SIP]
+    #### :violet[Strategy 2: Invest + Pause SIP]
     ''')
 
     st.markdown('''
@@ -58,7 +58,8 @@ def run_UI():
         largecap_returns.append(round(xirr(largecap)*100,1))
         smallcap_returns.append(round(xirr(smallcap)*100,1))
         strategy1_returns.append(round(xirr(strategy1)*100,1))
-    returns_df = pd.DataFrame(zip(years, largecap_returns, smallcap_returns, strategy1_returns), columns=['Year','Nifty 50','Nifty Smallcap 250', 'Strategy 1'])      
+    returns_df = pd.DataFrame(zip(years, largecap_returns, smallcap_returns, strategy1_returns), columns=['Year','Nifty 50','Nifty Smallcap 250', 'Strategy 1'])
+    # st.dataframe(returns_df)        
 
     fig2 = px.line(returns_df, x='Year', y=['Year','Nifty 50','Nifty Smallcap 250', 'Strategy 1'])
     fig2.update_layout(xaxis_title='Year', yaxis_title='XIRR %')
