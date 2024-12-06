@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+from utils.api_manager import NIFTYIndices
 
 from pyxirr import xirr 
 from router import sidebar_menu
@@ -114,6 +115,9 @@ def run_UI():
                     marker_line_width=1.5, opacity=0.4)
     fig2.update_layout(title_text='XIRR of the different scenarios for the entire period')
     st.plotly_chart(fig2, use_container_width=True)
+
+    # a = NIFTYIndices('NIFTYINDEXTRI').get_nse_indices_returns("NIFTY 50","01-Jan-2024", "15-Jan-2024", "NIFTY 50")
+    # st.dataframe(a)
 
     st.columns(3)[1].page_link("pages/strategy1.py", label='Navigate to Strategy 2', icon="♟️")
 
