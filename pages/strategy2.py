@@ -70,7 +70,10 @@ def run_UI():
     st.plotly_chart(fig2, use_container_width=True)
     
     # Navigation to Next Page Logic
-    st.columns(3)[1].page_link("pages/strategy1.py", label='Navigate to Strategy 2', icon="♟️")
+    if st.button('Navigate to Strategy 2', icon="♟️"):
+        st.toast('Hooray!', icon='🎉')
+    # st.columns(3)[1].page_link("pages/strategy1.py", label='Navigate to Strategy 2', icon="♟️")
+    
 
 sidebar_menu()
 run_UI()
